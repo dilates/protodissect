@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: docs (lint + links)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md"
+      - name: link check
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: .github/mlc-config.json
+          use-quiet-mode: true
+
+  python:
+    name: python (lint, types, tests)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --extra dev
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - run: uv run pytest -m "not eval" --cov=proto_dissect --cov-report=term
+              --cov-fail-under=80
+
+  reproducibility:
+    name: facts.json byte-reproducibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --extra dev
+      - run: uv run pytest tests/test_reproducibility.py
+
+  eval:
+    name: naming eval (nightly, needs local model runner)
+    if: ${{ github.event_name == 'schedule' }}
+    continue-on-error: true
+    runs-on: [self-hosted, gpu]
+    steps:
+      - uses: actions/checkout@v4
+      - run: uv sync --extra dev
+      - run: uv run pytest -m eval --report=docs/evals/latest.json
+
+on:
+  schedule:
+    - cron: "0 3 * * *"

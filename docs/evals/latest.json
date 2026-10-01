@@ -1,0 +1,9 @@
+{
+  "changed": 0,
+  "changed_correct": 0,
+  "dropped": 0,
+  "fields": 17,
+  "gate": true,
+  "model": "qwen3:4b",
+  "sensible_ratio": 1.0
+}

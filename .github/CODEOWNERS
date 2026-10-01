@@ -1,0 +1,20 @@
+# Component ownership (CONTRIBUTING review-gate matrix)
+
+*                                   @dilates
+
+# Inference core (2-approval zone)
+/src/proto_dissect/cluster.py       @dilates
+/src/proto_dissect/structure.py     @dilates
+/src/proto_dissect/classify.py      @dilates
+/docs/design/pipeline-spec.md       @dilates
+
+# facts schema (2-approval zone)
+/src/proto_dissect/facts.py         @dilates
+
+# LLM guardrails (2-approval zone)
+/src/proto_dissect/explain.py       @dilates
+
+# Community docs
+CONTRIBUTING.md                     @dilates
+GOVERNANCE.md                       @dilates
+SECURITY.md                         @dilates
