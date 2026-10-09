@@ -141,4 +141,3 @@ Specs first, ADRs for decisions, capture-driven tests. Start with
 ## License
 
 BSD-3-Clause - see [LICENSE](LICENSE).
- 
